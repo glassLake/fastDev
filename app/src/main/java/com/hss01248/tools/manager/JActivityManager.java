@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.hss01248.tools.base.BaseUtils;
+import com.hss01248.tools.pack.toast.MyToast;
 import com.orhanobut.logger.Logger;
 
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import java.util.LinkedList;
 public class JActivityManager {
     private static LinkedList<Activity> activityStack;
     private static JActivityManager instance;
+    private int activityCount;
 
     public boolean isOnScreen() {
         return isOnScreen;
@@ -147,7 +149,12 @@ public class JActivityManager {
             @Override
             public void onActivityStarted(Activity activity) {
 
-                Logger.e("onStarted:"+ activity);
+                activityCount ++;
+                Logger.e("onStarted:"+ activity +"---activityCount:"+activityCount);
+                if (activityCount ==1){
+                    MyToast.showSuccessToast("app进入前台了");
+
+                }
             }
 
             @Override
@@ -166,7 +173,13 @@ public class JActivityManager {
             @Override
             public void onActivityStopped(Activity activity) {
 
-                Logger.e("onStopped:"+ activity);
+                activityCount --;
+                Logger.e("onStopped:"+ activity +"---activityCount:"+activityCount);
+                if (activityCount ==0){
+                    MyToast.showFailToast("app进入后台了");
+
+
+                }
             }
 
             @Override
