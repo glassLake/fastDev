@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.hss01248.tools"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.kymjs.rxvolley:rxvolley:1.0.9'
+    compile 'com.kymjs.rxvolley:okhttp:1.0.9'
+    //compile 'com.github.orhanobut:logger:1.12'
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'com.avast:android-styled-dialogs:2.3.3'
+
+    compile 'com.facebook.fresco:fresco:0.10.0'
+    compile 'com.facebook.fresco:animated-webp:0.10.0'
+    compile 'com.facebook.fresco:animated-gif:0.10.0'
+    compile 'com.liulishuo.filedownloader:library:0.3.1'
+    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3' //状态栏颜色
+    compile project(path: ':mytoast')
+    compile 'com.mylhyl:acp:1.0.0'
+}

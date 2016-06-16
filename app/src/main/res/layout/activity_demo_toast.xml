@@ -1,0 +1,53 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/showToast1"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="默认Toast" />
+
+    <Button
+        android:id="@+id/showToast2"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="自定义5秒" />
+
+    <Button
+        android:id="@+id/showToast3"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="背景+文字" />
+
+    <Button
+        android:id="@+id/showToast4"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="背景为图片" />
+
+    <Button
+        android:id="@+id/showToast5"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="自定义动画" />
+
+    <Button
+        android:id="@+id/showToast6"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="显示logo" />
+
+    <Button
+        android:id="@+id/showToast7"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="自定义布局" />
+
+
+
+</LinearLayout>
