@@ -40,10 +40,9 @@ public class IntentUtils {
      * @param mobile
      */
     public static void sysCall(final String mobile){
-      PermissionUtils.askPhone(new Runnable() {
+      PermissionUtils.askPhone(new PermissionUtils.PermissionListener() {
           @Override
-          public void run() {
-
+          public void onGranted() {
               Uri uri = Uri.parse("tel:"+ mobile);
               Intent it = new Intent(Intent.ACTION_CALL, uri);
              /* Intent intent = new Intent();
@@ -51,6 +50,11 @@ public class IntentUtils {
               intent.setData(Uri.parse("tel:"+ mobile));//mobile为你要拨打的电话号码，模拟器中为模拟器编号也可*/
               it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
               BaseUtils.getContext().startActivity(it);
+          }
+
+          @Override
+          public void onDenied(List<String> permissions) {
+
           }
       });
 
@@ -73,14 +77,19 @@ public class IntentUtils {
      * @param content
      */
     public static void sysSendSms(final String mobile, final String content){
-        PermissionUtils.askSms(new Runnable() {
+        PermissionUtils.askSms(new PermissionUtils.PermissionListener() {
             @Override
-            public void run() {
+            public void onGranted() {
                 SmsManager smsManager = SmsManager.getDefault();
                 ArrayList<String> texts = smsManager.divideMessage(content);//拆分短信,短信字数太多了的时候要分几次发
                 for(String text : texts){
                     smsManager.sendTextMessage(mobile, null, text, null, null);//发送短信,mobile是对方手机号
                 }
+            }
+
+            @Override
+            public void onDenied(List<String> permissions) {
+
             }
         });
 

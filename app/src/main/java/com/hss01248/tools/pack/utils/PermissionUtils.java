@@ -1,11 +1,9 @@
 package com.hss01248.tools.pack.utils;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Build;
 
 import com.hss01248.tools.base.BaseUtils;
-import com.hss01248.tools.manager.JActivityManager;
 import com.hss01248.tools.pack.toast.MyToast;
 import com.mylhyl.acp.Acp;
 import com.mylhyl.acp.AcpListener;
@@ -18,7 +16,7 @@ import java.util.List;
  */
 public class PermissionUtils {
 
-    private static void askPermission(final Runnable runnable,String permission){
+    private static void askPermission(final PermissionListener listener,String... permission){
         if (Build.VERSION.SDK_INT >= 23) {
             // Marshmallow+
             Acp.getInstance(BaseUtils.getContext()).request(new AcpOptions.Builder()
@@ -32,17 +30,18 @@ public class PermissionUtils {
                     new AcpListener() {
                         @Override
                         public void onGranted() {
-                            runnable.run();
+                            listener.onGranted();
                         }
 
                         @Override
                         public void onDenied(List<String> permissions) {
+                            listener.onDenied(permissions);
                             MyToast.showFailToast("权限已经被拒绝");
                         }
                     });
         } else {
             // Pre-Marshmallow
-            runnable.run();
+            listener.onGranted();
         }
     }
 
@@ -50,19 +49,19 @@ public class PermissionUtils {
      * group:android.permission-group.CALENDAR
      permission:android.permission.READ_CALENDAR
      permission:android.permission.WRITE_CALENDAR
-     * @param runnable
+
      */
-    public static void askCalendar(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.READ_CALENDAR);
+    public static void askCalendar(PermissionListener listener){
+        askPermission(listener, Manifest.permission.READ_CALENDAR);
     }
 
     /**
      * group:android.permission-group.CAMERA
      permission:android.permission.CAMERA
-     * @param runnable
+
      */
-    public static void askCamera(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.CAMERA);
+    public static void askCamera(PermissionListener listener){
+        askPermission(listener, Manifest.permission.CAMERA);
     }
 
 
@@ -70,10 +69,10 @@ public class PermissionUtils {
      * group:android.permission-group.STORAGE
      permission:android.permission.READ_EXTERNAL_STORAGE
      permission:android.permission.WRITE_EXTERNAL_STORAGE
-     * @param runnable
+
      */
-    public static void askExternalStorage(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    public static void askExternalStorage(PermissionListener listener){
+        askPermission(listener, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
@@ -86,10 +85,10 @@ public class PermissionUtils {
      permission:android.permission.USE_SIP
      permission:android.permission.PROCESS_OUTGOING_CALLS
      permission:com.android.voicemail.permission.ADD_VOICEMAIL
-     * @param runnable
+
      */
-    public static void askPhone(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.READ_PHONE_STATE);
+    public static void askPhone(PermissionListener listener){
+        askPermission(listener, Manifest.permission.READ_PHONE_STATE);
     }
 
     /**
@@ -101,10 +100,10 @@ public class PermissionUtils {
      permission:android.permission.RECEIVE_SMS
      permission:android.permission.SEND_SMS
      permission:android.permission.READ_CELL_BROADCASTS
-     * @param runnable
+
      */
-    public static void askSms(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.SEND_SMS);
+    public static void askSms(PermissionListener listener){
+        askPermission(listener, Manifest.permission.SEND_SMS);
     }
 
 
@@ -112,30 +111,29 @@ public class PermissionUtils {
      * group:android.permission-group.LOCATION
      permission:android.permission.ACCESS_FINE_LOCATION
      permission:android.permission.ACCESS_COARSE_LOCATION
-     * @param runnable
      */
-    public static void askLocationInfo(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.ACCESS_COARSE_LOCATION);
+    public static void askLocationInfo(PermissionListener listener){
+        askPermission(listener, Manifest.permission.ACCESS_COARSE_LOCATION);
     }
 
 
     /**
      * group:android.permission-group.MICROPHONE
      permission:android.permission.RECORD_AUDIO
-     * @param runnable
+
      */
-    public static void askRecord(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.RECORD_AUDIO);
+    public static void askRecord(PermissionListener listener){
+        askPermission(listener, Manifest.permission.RECORD_AUDIO);
     }
 
 
     /**
      * group:android.permission-group.SENSORS
      permission:android.permission.BODY_SENSORS
-     * @param runnable
+
      */
-    public static void askSensors(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.BODY_SENSORS);
+    public static void askSensors(PermissionListener listener){
+        askPermission(listener, Manifest.permission.BODY_SENSORS);
     }
 
     /**
@@ -143,19 +141,15 @@ public class PermissionUtils {
      permission:android.permission.WRITE_CONTACTS
      permission:android.permission.GET_ACCOUNTS
      permission:android.permission.READ_CONTACTS
-     * @param runnable
+
      */
-    public static void askContacts(final Runnable runnable){
-        askPermission(runnable, Manifest.permission.READ_CONTACTS);
+    public static void askContacts(PermissionListener listener){
+        askPermission(listener, Manifest.permission.READ_CONTACTS);
     }
 
-    public static void toAppManagerActivity(){
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.MAIN");
-        intent.setClassName("com.android.settings", "com.android.settings.ManageApplications");
-        if (JActivityManager.getInstance().currentActivity()!= null){
-            JActivityManager.getInstance().currentActivity().startActivity(intent);
-        }
+    public interface  PermissionListener{
+        void onGranted();
+        void onDenied(List<String> permissions);
 
     }
 
