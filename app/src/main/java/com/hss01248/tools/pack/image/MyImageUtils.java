@@ -6,19 +6,14 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.facebook.cache.disk.DiskCacheConfig;
-import com.facebook.common.internal.Supplier;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.commit451.nativestackblur.NativeStackBlur;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.hss01248.tools.base.BaseUtils;
 import com.hss01248.tools.manager.StateManager;
 import com.hss01248.tools.pack.image.fresco.FrescoImageloadHelper;
-import com.hss01248.tools.pack.image.fresco.MyImageCacheStatsTracker;
+import com.hss01248.tools.pack.image.fresco.FrescoUtils;
 import com.hss01248.tools.pack.utils.ViewUtils;
 import com.orhanobut.logger.Logger;
-
-import java.io.File;
 
 /**
  * Created by Administrator on 2016/5/6 0006.
@@ -470,28 +465,35 @@ Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" 
         if (TextUtils.isEmpty(url)){
             return;
         }
-        FrescoImageloadHelper.LoadImageFromURLAndCallBack(url, BaseUtils.getContext(), dataSubscriber);
+        FrescoImageloadHelper.loadOriginalBitmap(url, BaseUtils.getContext(), dataSubscriber);
     }
 
 
     public static void initFresco(int sizeInM){
-       // FileUtils.getCacheSubDir(Constant.Cache.PHOTO_FRESCO);//先创建文件夹,防止框架创建文件夹失败
-        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(BaseUtils.getContext())
-                .setMaxCacheSize(sizeInM*1024*1024)
-                .setBaseDirectoryName("fresco")
-                .setBaseDirectoryPathSupplier(new Supplier<File>() {
-                    @Override
-                    public File get() {
-                        return BaseUtils.getContext().getCacheDir();
-                    }
-                })
-                .build();
-        MyImageCacheStatsTracker imageCacheStatsTracker = new MyImageCacheStatsTracker();
-        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(BaseUtils.getContext())
-                .setMainDiskCacheConfig(diskCacheConfig)
-                .setImageCacheStatsTracker(imageCacheStatsTracker)
-                .build();
-        Fresco.initialize(BaseUtils.getContext(), config);
+       FrescoUtils.init(BaseUtils.getContext(),sizeInM);
+    }
+
+
+    private Bitmap fastBlur(Bitmap bkg, int radius) {
+
+      Bitmap smallBitmap =   Bitmap.createScaledBitmap(bkg,bkg.getWidth()/3,bkg.getHeight()/3,true);
+
+      return   NativeStackBlur.process(smallBitmap, radius);
+
+      /*  float scaleFactor = 8;
+
+        Bitmap overlay = Bitmap.createBitmap((int)(view.getMeasuredWidth()/scaleFactor),
+                (int)(view.getMeasuredHeight()/scaleFactor), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(overlay);
+        canvas.translate(-view.getLeft()/scaleFactor, -view.getTop()/scaleFactor);
+        canvas.scale(1 / scaleFactor, 1 / scaleFactor);
+        Paint paint = new Paint();
+        paint.setFlags(Paint.FILTER_BITMAP_FLAG);
+        canvas.drawBitmap(bkg, 0, 0, paint);
+       return NativeStackBlur.process(overlay, radius);*/
+       // view.setBackground(new BitmapDrawable(getResources(), overlay));
+
+
     }
 
 

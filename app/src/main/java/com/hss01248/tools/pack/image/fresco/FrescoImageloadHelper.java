@@ -17,6 +17,7 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hss01248.tools.pack.image.MyImageUtils;
@@ -42,16 +43,39 @@ public class FrescoImageloadHelper {
                 .build();
         destImageView.setController(draweeController);
     }
-    public static void LoadImageFromURLAndCallBack(String URL,Context context,BaseBitmapDataSubscriber bbds)
+    public static void loadOriginalBitmap(String URL, Context context, BaseBitmapDataSubscriber bbds)
     {
 
-        ImageRequest imageRequest =
-                ImageRequestBuilder.newBuilderWithSource(Uri.parse(URL))
-                        .setProgressiveRenderingEnabled(true)
-                        .build();
+        loadBitmap(URL,context,0,0,null,bbds);
+     /*   DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+                .setImageRequest(imageRequest)
+                .setOldController(destImageView.getController())
+                .setAutoPlayAnimations(true)
+                .build();
+        destImageView.setController(draweeController);*/
+    }
+
+    public static void loadBitmap(String URL, Context context, int width, int height,
+                                          BasePostprocessor postprocessor, BaseBitmapDataSubscriber bbds) {
+
+        ResizeOptions resizeOptions = null;
+        if (width !=0 && height != 0 ){
+            resizeOptions = new ResizeOptions(width, height);
+        }
+
+
+
+        ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(URL))
+                    .setProgressiveRenderingEnabled(true)
+                    .setPostprocessor(postprocessor)
+                    .setResizeOptions(resizeOptions)
+                    .build();
+
+
 
 
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
+
         DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline.fetchDecodedImage(imageRequest, context);
         dataSource.subscribe(bbds, CallerThreadExecutor.getInstance());
      /*   DraweeController draweeController = Fresco.newDraweeControllerBuilder()
