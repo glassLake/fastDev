@@ -41,6 +41,24 @@ public class FileUtils {
 		return Formatter.formatFileSize(context,size);
 	}
 
+	public static File getSDDownloadSubdir(String name){
+		File file = getSdRootSubDir("download");
+		File file1 = new File(file,name);
+		if (!file1.exists() || !file1.isDirectory()){
+			file1.mkdirs();
+		}
+
+		return file1;
+	}
+
+	public static File getDownloadVideoDir(){
+		return getSDDownloadSubdir("video");
+	}
+
+	public static File getDownloadImageDir(){
+		return getSDDownloadSubdir("image");
+	}
+
 
 
 
