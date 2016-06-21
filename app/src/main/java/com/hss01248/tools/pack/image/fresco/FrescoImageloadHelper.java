@@ -65,6 +65,8 @@ public class FrescoImageloadHelper {
 
 
 
+
+
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(URL))
                     .setProgressiveRenderingEnabled(true)
                     .setPostprocessor(postprocessor)

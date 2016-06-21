@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.webkit.URLUtil;
 
 import com.hss01248.tools.base.BaseUtils;
 import com.hss01248.tools.pack.toast.MyToast;
@@ -1000,5 +1001,16 @@ public class FileUtils {
 	public static String getMimeType(final File file) {
 		String extension = getExtension(file);
 		return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+	}
+
+
+	/**
+	 * 需要处理url编码的问题
+	 * @param url
+	 * @return
+     */
+	public static String getFileName(String url) {
+		String name = URLUtil.guessFileName(url,"","");
+		return name;
 	}
 }

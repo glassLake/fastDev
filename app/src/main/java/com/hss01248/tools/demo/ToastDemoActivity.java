@@ -7,8 +7,14 @@ import android.view.View;
 import android.widget.Button;
 
 import com.hss01248.tools.R;
+import com.hss01248.tools.base.BaseUtils;
+import com.hss01248.tools.pack.image.fresco.FrescoUtils;
+import com.hss01248.tools.pack.toast.MyToast;
 import com.hss01248.tools.pack.toast.SuperCustomToast;
+import com.hss01248.tools.pack.utils.FileUtils;
 import com.hss01248.tools.pack.utils.IntentUtils;
+
+import java.io.File;
 
 /**
  * Created by Administrator on 2016/6/14 0014.
@@ -55,14 +61,20 @@ public class ToastDemoActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                IntentUtils.sysShareMsg(context,"shareTo","this is a sys share test","刚刚翻了翻答案发现原来真的是因为我长的不合适而不是公共设施不人性化啊啊啊啊！设计师我这么多年错怪你们真是对不起了！！！！因为从小身高体壮专修篮球所以身边200左右的还是颇有几只的，有些痛真的只有我们自己知道。比如进门一起低头，上公交默契的不坐座位，蹲坑关不上门等等。。。。在认识他们之前坐车副驾驶的位置指定都是我的，然而第一次一起出去玩打车的时候，我们三个人都下意识的去拉副驾门把手，那个尴尬你们懂吗？！！！从车窗只看到了三条裤腰的司机大哥一脸的惊恐啊！！！\n" +
-                        "另附两张197好基友 @邹海艇 使用公共设施的状态\n" +
-                        "\n" +
-                        "\n" +
-                        "作者：Alger\n" +
-                        "链接：https://www.zhihu.com/question/26730775/answer/104921961\n" +
-                        "来源：知乎\n" +
-                        "著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","");
+                FrescoUtils.download("https://americanbridgepac.org/app/uploads/unnamed-6.gif",
+                        BaseUtils.getContext(),
+                        FileUtils.getDownloadImageDir(),
+                        new FrescoUtils.DownloadListener() {
+                            @Override
+                            public void onSuccess(File file) {
+                                MyToast.showSuccessToast("下载成功："+ file.getAbsolutePath());
+                            }
+
+                            @Override
+                            public void onFail() {
+                                MyToast.showFailToast("下载失败");
+                            }
+                        });
 
             }
         });
@@ -75,7 +87,7 @@ public class ToastDemoActivity extends Activity {
                 //持续5000毫秒
 //                toast.show(info + i++, 5000);
                 //toast.showSameMsg(sameString, 5000);
-                IntentUtils.sysRecord();
+               FrescoUtils.clearDiskCache();
 
             }
         });
