@@ -405,57 +405,7 @@ public class MyBitmapUtils {
         compressImage(imageFile, null, qualityCompress, maxSize);
     }
 
-    /**
-     * 质量压缩图片
-     * @param imageFile
-     * @param qualityCompress
-     * @param maxSize
-     * @return
-     */
-    public static Bitmap compressBitmap(String imageFile, boolean qualityCompress, long maxSize) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imageFile, options);
-        int targetWidth = options.outWidth / 2;
-        int targeHeight = options.outHeight / 2;
-        return compressBitmap(imageFile, qualityCompress, maxSize, targetWidth, targeHeight);
-    }
 
-    /**
-     * 质量压缩图片-压缩在maxSize以内
-     * @param imageFile
-     * @param maxSize
-     */
-    public static void compressImage(String imageFile, long maxSize) {
-        compressImage(imageFile, true, maxSize);
-    }
-
-    /**
-     * 质量压缩图片-压缩在maxSize以内
-     * @param imageFile
-     * @param maxSize
-     * @return
-     */
-    public static Bitmap compressBimap(String imageFile, long maxSize) {
-        return compressBitmap(imageFile, true, maxSize);
-    }
-
-    /**
-     * 质量压缩图片-压缩在1M以内
-     * @param imageFile
-     */
-    public static void compressImage(String imageFile) {
-        compressImage(imageFile, true, (long)(1 * 1024*1024));
-    }
-
-    /**
-     * 质量压缩图片-压缩在1M以内
-     * @param imageFile
-     * @return
-     */
-    public static Bitmap compressBitmap(String imageFile) {
-        return compressBitmap(imageFile, true, (long)(1 * 1024*1024));
-    }
 
     /**
      * 旋转bitmap

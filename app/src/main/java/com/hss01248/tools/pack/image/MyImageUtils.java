@@ -1,30 +1,16 @@
 package com.hss01248.tools.pack.image;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.commit451.nativestackblur.NativeStackBlur;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.hss01248.tools.base.BaseUtils;
 import com.hss01248.tools.manager.StateManager;
@@ -37,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -47,10 +32,7 @@ import java.io.InputStream;
 public class MyImageUtils {
 
 
-    public static final int LEFT = 0;
-    public static final int RIGHT = 1;
-    public static final int TOP = 3;
-    public static final int BOTTOM = 4;
+
 
     public static int articleCover = ViewUtils.dip2Px(80);
     public static int avatar256 = ViewUtils.dip2Px(128);
@@ -509,121 +491,14 @@ Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" 
        return ThumbnailUtils.extractThumbnail(bitmap,width,height);
     }
 
-    /** */
-    /**
-     * 图片去色,返回灰度图片
-     *
-     * @param bmpOriginal 传入的图片
-     * @return 去色后的图片
-     */
-    public static Bitmap toGrayscale(Bitmap bmpOriginal) {
-        int width, height;
-        height = bmpOriginal.getHeight();
-        width = bmpOriginal.getWidth();
-        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        Canvas c = new Canvas(bmpGrayscale);
-        Paint paint = new Paint();
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(f);
-        c.drawBitmap(bmpOriginal, 0, 0, paint);
-        return bmpGrayscale;
-    }
 
 
-    /**
-     * 保存图片为JPEG
-     *
-     * @param bitmap
-     * @param path
-     */
-    public static void saveJPGE_After(Bitmap bitmap, String path) {
-        File file = new File(path);
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)) {
-                out.flush();
-                out.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 保存图片为PNG
-     *
-     * @param bitmap
-     * @param name
-     */
-    public static void savePNG_After(Bitmap bitmap, String name) {
-        File file = new File(name);
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
-                out.flush();
-                out.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 水印
-     *
-     * @param src
-     * @return
-     */
-    public static Bitmap createBitmapForWatermark(Bitmap src, Bitmap watermark) {
-        if (src == null) {
-            return null;
-        }
-        int w = src.getWidth();
-        int h = src.getHeight();
-        int ww = watermark.getWidth();
-        int wh = watermark.getHeight();
-        // create the new blank bitmap
-        Bitmap newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);// 创建一个新的和SRC长度宽度一样的位图
-        Canvas cv = new Canvas(newb);
-        // draw src into
-        cv.drawBitmap(src, 0, 0, null);// 在 0，0坐标开始画入src
-        // draw watermark into
-        cv.drawBitmap(watermark, w - ww + 5, h - wh + 5, null);// 在src的右下角画入水印
-        // save all clip
-        cv.save(Canvas.ALL_SAVE_FLAG);// 保存
-        // store
-        cv.restore();// 存储
-        return newb;
-    }
 
 
-    private Bitmap fastBlur(Bitmap bkg, int radius) {
-
-      Bitmap smallBitmap =   Bitmap.createScaledBitmap(bkg,bkg.getWidth()/3,bkg.getHeight()/3,true);
-
-      return   NativeStackBlur.process(smallBitmap, radius);
-
-      /*  float scaleFactor = 8;
-
-        Bitmap overlay = Bitmap.createBitmap((int)(view.getMeasuredWidth()/scaleFactor),
-                (int)(view.getMeasuredHeight()/scaleFactor), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(overlay);
-        canvas.translate(-view.getLeft()/scaleFactor, -view.getTop()/scaleFactor);
-        canvas.scale(1 / scaleFactor, 1 / scaleFactor);
-        Paint paint = new Paint();
-        paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-        canvas.drawBitmap(bkg, 0, 0, paint);
-       return NativeStackBlur.process(overlay, radius);*/
-       // view.setBackground(new BitmapDrawable(getResources(), overlay));
 
 
-    }
+
+
 
     /**
      * 将Bitmap转换成指定大小
@@ -682,71 +557,10 @@ Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" 
     }
 
 
-    /**
-     * 让Gallery上能马上看到该图片
-     */
-    private static void scanPhoto(Context ctx, String imgFileName) {
-        Intent mediaScanIntent = new Intent(
-                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File file = new File(imgFileName);
-        Uri contentUri = Uri.fromFile(file);
-        mediaScanIntent.setData(contentUri);
-        ctx.sendBroadcast(mediaScanIntent);
-    }
-
-
-    /**
-     * 获取SD卡中最新图片路径
-     *
-     * @return
-     */
-    public static String getLatestImage(Activity context) {
-        String latestImage = null;
-        String[] items = { MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATA };
-        Cursor cursor = context.managedQuery(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, items, null,
-                null, MediaStore.Images.Media._ID + " desc");
-
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor
-                    .moveToNext()) {
-                latestImage = cursor.getString(1);
-                break;
-            }
-        }
-
-        return latestImage;
-    }
 
 
 
 
-
-    /**
-     * 创建缩略图
-     *
-     * @param context
-     * @param largeImagePath
-     *            原始大图路径
-     * @param thumbfilePath
-     *            输出缩略图路径
-     * @param square_size
-     *            输出图片宽度
-     * @param quality
-     *            输出图片质量
-     * @throws IOException
-     */
-    public static void createImageThumbnail(Context context,
-                                            String largeImagePath, String thumbfilePath, int square_size,
-                                            int quality) throws IOException {
-
-
-        // 原始图片bitmap
-        Bitmap cur_bitmap = getSmallBitmap(largeImagePath, square_size,square_size);
-        saveBitmap(cur_bitmap,thumbfilePath);
-    }
 
     public static Bitmap getBitmapByPath(String filePath,
                                          BitmapFactory.Options opts) {
@@ -921,29 +735,7 @@ Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" 
 
 
 
-    /**
-     * 获得圆角图片的方法
-     */
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float roundPx) {
 
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        return output;
-    }
 
     /**
      * 把一个View的对象转换成bitmap
@@ -976,177 +768,15 @@ Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" 
     }
 
 
-   /* *//** *//*
-    *//**
-     * 图片去色,返回灰度图片
-     *
-     * @param bmpOriginal
-     *            传入的图片
-     * @return 去色后的图片
-     */
-    /*
-    public static Bitmap toGrayscale(Bitmap bmpOriginal) {
-        int width, height;
-        height = bmpOriginal.getHeight();
-        width = bmpOriginal.getWidth();
-        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height,
-                Bitmap.Config.RGB_565);
-        Canvas c = new Canvas(bmpGrayscale);
-        Paint paint = new Paint();
-        ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(f);
-        c.drawBitmap(bmpOriginal, 0, 0, paint);
-        return bmpGrayscale;
-    }*/
-
-
-
-    /**
-     * 图片合成
-     *
-     * @return
-     */
-    public static Bitmap potoMix(int direction, Bitmap... bitmaps) {
-        if (bitmaps.length <= 0) {
-            return null;
-        }
-        if (bitmaps.length == 1) {
-            return bitmaps[0];
-        }
-        Bitmap newBitmap = bitmaps[0];
-        // newBitmap = createBitmapForFotoMix(bitmaps[0],bitmaps[1],direction);
-        for (int i = 1; i < bitmaps.length; i++) {
-            newBitmap = createBitmapForFotoMix(newBitmap, bitmaps[i], direction);
-        }
-        return newBitmap;
-    }
 
 
 
 
 
-    private static Bitmap createBitmapForFotoMix(Bitmap first, Bitmap second,
-                                                 int direction) {
-        if (first == null) {
-            return null;
-        }
-        if (second == null) {
-            return first;
-        }
-        int fw = first.getWidth();
-        int fh = first.getHeight();
-        int sw = second.getWidth();
-        int sh = second.getHeight();
-        Bitmap newBitmap = null;
-        if (direction == LEFT) {
-            newBitmap = Bitmap.createBitmap(fw + sw, fh > sh ? fh : sh,
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(newBitmap);
-            canvas.drawBitmap(first, sw, 0, null);
-            canvas.drawBitmap(second, 0, 0, null);
-        } else if (direction == RIGHT) {
-            newBitmap = Bitmap.createBitmap(fw + sw, fh > sh ? fh : sh,
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(newBitmap);
-            canvas.drawBitmap(first, 0, 0, null);
-            canvas.drawBitmap(second, fw, 0, null);
-        } else if (direction == TOP) {
-            newBitmap = Bitmap.createBitmap(sw > fw ? sw : fw, fh + sh,
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(newBitmap);
-            canvas.drawBitmap(first, 0, sh, null);
-            canvas.drawBitmap(second, 0, 0, null);
-        } else if (direction == BOTTOM) {
-            newBitmap = Bitmap.createBitmap(sw > fw ? sw : fw, fh + sh,
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(newBitmap);
-            canvas.drawBitmap(first, 0, 0, null);
-            canvas.drawBitmap(second, 0, fh, null);
-        }
-        return newBitmap;
-    }
 
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        int h = options.outHeight;
-        int w = options.outWidth;
-        int inSampleSize = 0;
-        if (h > reqHeight || w > reqWidth) {
-            float ratioW = (float) w / reqWidth;
-            float ratioH = (float) h / reqHeight;
-            inSampleSize = (int) Math.min(ratioH, ratioW);
-        }
-        inSampleSize = Math.max(1, inSampleSize);
-        return inSampleSize;
-    }
-
-    public static Bitmap getSmallBitmap(String filePath, int reqWidth, int reqHeight) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filePath, options);
-    }
 
 
-    public byte[] compressBitmapToBytes(String filePath, int reqWidth, int reqHeight, int quality) {
-        Bitmap bitmap = getSmallBitmap(filePath, reqWidth, reqHeight);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
-        byte[] bytes = baos.toByteArray();
-        bitmap.recycle();
-
-        return bytes;
-    }
-
-    public byte[] compressBitmapSmallTo(String filePath, int reqWidth, int reqHeight, int maxLenth) {
-        int quality = 100;
-        byte[] bytes = compressBitmapToBytes(filePath, reqWidth, reqHeight, quality);
-        while (bytes.length > maxLenth && quality > 0) {
-            quality = quality / 2;
-            bytes = compressBitmapToBytes(filePath, reqWidth, reqHeight, quality);
-        }
-        return bytes;
-    }
-
-    public byte[] compressBitmapQuikly(String filePath) {
-        return compressBitmapToBytes(filePath, 480, 800, 50);
-    }
-
-    public byte[] compressBitmapQuiklySmallTo(String filePath, int maxLenth) {
-        return compressBitmapSmallTo(filePath, 480, 800, maxLenth);
-    }
-
-
-    public static boolean saveBitmap(Bitmap bitmap, File file) {
-        if (bitmap == null)
-            return false;
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.flush();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean saveBitmap(Bitmap bitmap, String absPath) {
-        return saveBitmap(bitmap, new File(absPath));
-    }
 
 
 

@@ -12,7 +12,7 @@ public class MyToast {
 
     public static void showToast(String text) {
 
-       ToastUtils.showToast(BaseUtils.getContext(),text,false);
+       ToastUtils.showToast(BaseUtils.getContext(),text,false,BaseUtils.getMainThreadHandler());
 
     }
 
@@ -22,14 +22,14 @@ public class MyToast {
 
     public static void showDebugToast(final String text) {
 
-        ToastUtils.showDebugToast(BaseUtils.getContext(),text,StateManager.isDebugMode);
+        ToastUtils.showDebugToast(BaseUtils.getContext(),text,StateManager.isDebugMode,BaseUtils.getMainThreadHandler());
 
 
     }
 
     public static void showLongToast(final String text) {
 
-       ToastUtils.showLongToast(BaseUtils.getContext(),text);
+       ToastUtils.showLongToast(BaseUtils.getContext(),text,BaseUtils.getMainThreadHandler());
 
     }
 
@@ -37,10 +37,10 @@ public class MyToast {
 
 
     public static void showSuccessToast(String text){
-        ToastUtils.showSuccessToast(BaseUtils.getContext(),text);
+        ToastUtils.showSuccessToast(BaseUtils.getContext(),text,BaseUtils.getMainThreadHandler());
     }
 
     public static void showFailToast(String text){
-       ToastUtils.showFailToast(BaseUtils.getContext(),text);
+       ToastUtils.showFailToast(BaseUtils.getContext(),text,BaseUtils.getMainThreadHandler());
     }
 }

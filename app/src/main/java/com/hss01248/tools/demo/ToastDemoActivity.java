@@ -13,6 +13,7 @@ import com.hss01248.tools.pack.toast.MyToast;
 import com.hss01248.tools.pack.toast.SuperCustomToast;
 import com.hss01248.tools.pack.utils.FileUtils;
 import com.hss01248.tools.pack.utils.IntentUtils;
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 
@@ -73,6 +74,11 @@ public class ToastDemoActivity extends Activity {
                             @Override
                             public void onFail() {
                                 MyToast.showFailToast("下载失败");
+                            }
+
+                            @Override
+                            public void onProgress(float progress) {
+                                Logger.d("progress:"+progress*100);
                             }
                         });
 

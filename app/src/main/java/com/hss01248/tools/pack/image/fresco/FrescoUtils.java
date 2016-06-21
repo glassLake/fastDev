@@ -335,6 +335,11 @@ public class FrescoUtils {
     /**
      * 文件下载到文件夹中：将图片缓存到本地后，将缓存的图片文件copy到另一个文件夹中,其文件名将与中名字一致
      *
+     * 容易发生如下异常，progress在100处停留时间长
+     * dalvikvm: Could not find method android.graphics.Bitmap.getAllocationByteCount,
+     * referenced from method com.facebook.imageutils.BitmapUtil.getSizeInBytes
+     06-21 16:15:39.547 3043-3244/com.hss01248.tools W/dalvikvm: VFY:
+     unable to resolve virtual method 569: Landroid/graphics/Bitmap;.getAllocationByteCount ()I
 
      * @param url
      * @param context
