@@ -231,6 +231,7 @@ public class FrescoUtils {
                 .setImageCacheStatsTracker(imageCacheStatsTracker)
                 .setDownsampleEnabled(true)//Downsampling，它处理图片的速度比常规的裁剪更快，
                 // 并且同时支持PNG，JPG以及WEP格式的图片，非常强大,与ResizeOptions配合使用
+                .setBitmapsConfig(Bitmap.Config.RGB_565)
                 .build();
         Fresco.initialize(context, config);
     }

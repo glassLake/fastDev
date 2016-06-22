@@ -8,11 +8,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import com.hss01248.tools.base.BaseUtils;
 
 import java.util.ArrayList;
 
@@ -359,7 +362,9 @@ public class NotifyUtil {
     }
 
     public void notify_HeadUp(PendingIntent pendingIntent, int smallIcon, int largeIcon,
-                              String ticker, String title, String content, int leftbtnicon, String lefttext, PendingIntent leftPendingIntent, int rightbtnicon, String righttext, PendingIntent rightPendingIntent, boolean sound, boolean vibrate, boolean lights) {
+                              String ticker, String title, String content, int leftbtnicon, String lefttext,
+                              PendingIntent leftPendingIntent, int rightbtnicon, String righttext,
+                              PendingIntent rightPendingIntent, boolean sound, boolean vibrate, boolean lights) {
 
         setCompatBuilder(pendingIntent, smallIcon, ticker, title, content, sound, vibrate, lights);
         cBuilder.setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), largeIcon));
@@ -392,4 +397,107 @@ public class NotifyUtil {
         // 取消通知
         nm.cancelAll();
     }
+
+
+    /**
+     * 应该在service的oncreate方法中调用
+     * @param pIntent
+     * @param smallIcon
+     * @param ticker
+     * @param title
+     * @param content
+     */
+    public void showServiceForGround(PendingIntent pIntent,int smallIcon,String ticker,String title,String content){
+        cBuilder.setContentIntent(pIntent);// 该通知要启动的Intent
+        cBuilder.setSmallIcon(smallIcon);// 设置顶部状态栏的小图标
+        cBuilder.setTicker(ticker);// 在顶部状态栏中的提示信息
+
+        cBuilder.setContentTitle(title);// 设置通知中心的标题
+        cBuilder.setContentText(content);// 设置通知中心中的内容
+        cBuilder.setWhen(System.currentTimeMillis());
+
+		/*
+         * 将AutoCancel设为true后，当你点击通知栏的notification后，它会自动被取消消失,
+		 * 不设置的话点击消息后也不清除，但可以滑动删除
+		 */
+        cBuilder.setAutoCancel(false);
+        cBuilder.setOngoing(true);
+        // 将Ongoing设为true 那么notification将不能滑动删除
+        // notifyBuilder.setOngoing(true);
+        /*
+         * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
+		 * 优先级越高的，通知排的越靠前，优先级低的，不会在手机最顶部的状态栏显示图标
+		 */
+        cBuilder.setPriority(NotificationCompat.FLAG_FOREGROUND_SERVICE);
+        /*
+         * Notification.DEFAULT_ALL：铃声、闪光、震动均系统默认。
+		 * Notification.DEFAULT_SOUND：系统默认铃声。
+		 * Notification.DEFAULT_VIBRATE：系统默认震动。
+		 * Notification.DEFAULT_LIGHTS：系统默认闪光。
+		 * notifyBuilder.setDefaults(Notification.DEFAULT_ALL);
+		 */
+        int defaults = 0;
+
+
+            defaults |= Notification.DEFAULT_SOUND;
+
+
+            defaults |= Notification.DEFAULT_VIBRATE;
+
+            defaults |= Notification.DEFAULT_LIGHTS;
+
+
+        cBuilder.setDefaults(defaults);
+        sent();
+    }
+
+
+    public void showSimpleWithSound(PendingIntent pIntent,int smallIcon,String ticker,String title,String content,int soundId){
+        cBuilder.setContentIntent(pIntent);// 该通知要启动的Intent
+        cBuilder.setSmallIcon(smallIcon);// 设置顶部状态栏的小图标
+        cBuilder.setTicker(ticker);// 在顶部状态栏中的提示信息
+
+        cBuilder.setContentTitle(title);// 设置通知中心的标题
+        cBuilder.setContentText(content);// 设置通知中心中的内容
+        cBuilder.setWhen(System.currentTimeMillis());
+
+		/*
+         * 将AutoCancel设为true后，当你点击通知栏的notification后，它会自动被取消消失,
+		 * 不设置的话点击消息后也不清除，但可以滑动删除
+		 */
+        cBuilder.setAutoCancel(true);
+        // 将Ongoing设为true 那么notification将不能滑动删除
+        // notifyBuilder.setOngoing(true);
+        /*
+         * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
+		 * 优先级越高的，通知排的越靠前，优先级低的，不会在手机最顶部的状态栏显示图标
+		 */
+        cBuilder.setPriority(NotificationCompat.FLAG_FOREGROUND_SERVICE);
+        /*
+         * Notification.DEFAULT_ALL：铃声、闪光、震动均系统默认。
+		 * Notification.DEFAULT_SOUND：系统默认铃声。
+		 * Notification.DEFAULT_VIBRATE：系统默认震动。
+		 * Notification.DEFAULT_LIGHTS：系统默认闪光。
+		 * notifyBuilder.setDefaults(Notification.DEFAULT_ALL);
+		 */
+        int defaults = 0;
+
+
+       // defaults |= Notification.DEFAULT_SOUND;
+
+
+        defaults |= Notification.DEFAULT_VIBRATE;
+
+        defaults |= Notification.DEFAULT_LIGHTS;
+
+        cBuilder.setSound(Uri.parse("android.resource://"
+                + BaseUtils.getContext().getPackageName() + "/" + soundId));
+
+
+        cBuilder.setDefaults(defaults);
+        sent();
+    }
+
+
+
 }

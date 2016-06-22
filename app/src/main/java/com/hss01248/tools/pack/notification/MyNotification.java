@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.widget.RemoteViews;
 
+import com.hss01248.tools.R;
 import com.hss01248.tools.base.BaseUtils;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class MyNotification {
     public static final int ID_BUTTON = 28;
     public static final int ID_PROGRESS = 29;
     public static final int ID_HEADUP = 30;
+    public static final int ID_SERVICE = 31;
 
 
 
@@ -40,7 +42,7 @@ public class MyNotification {
     public static NotifyUtil showSingline(PendingIntent pIntent,int smallIcon,String ticker,String title,String content){
             //实例化工具类，并且调用接口
             NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_SINGLEINE);
-            notify1.notify_normal_singline(pIntent, smallIcon, ticker, title, content, true, true, false);
+            notify1.notify_normal_singline(pIntent, smallIcon, ticker, title, content, true, true, true);
         return notify1;
     }
 
@@ -276,9 +278,26 @@ public class MyNotification {
 
         NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_HEADUP);
         notify1.notify_HeadUp(pendingIntent, smallIcon, largeIcon, ticker, title, content,
-                lefticon, lefttext, leftPendingIntent, righticon, righttext, rightPendingIntent, true, true, false);
+                lefticon, lefttext, leftPendingIntent, righticon, righttext, rightPendingIntent, true, true, true);
         return notify1;
     }
+
+    public static NotifyUtil showService(){
+        NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_SERVICE);
+        notify1.showServiceForGround(null, R.mipmap.ic_launcher,"搭搭巴士开始监测","监测嗒嗒巴士中","西乡步行街到香港理工");
+        return notify1;
+    }
+
+
+    public static NotifyUtil showSound(PendingIntent pIntent,int smallIcon,String ticker,String title,String content){
+        NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_SINGLEINE);
+        notify1.showSimpleWithSound(pIntent, smallIcon, ticker, title, content,R.raw.sms);
+        return notify1;
+    }
+
+
+
+
 
 
     public static void clear(int id){

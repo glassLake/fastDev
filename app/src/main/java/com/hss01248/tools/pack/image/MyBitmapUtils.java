@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
+ *
  * Created by Administrator on 2016/6/21 0021.
  */
 public class MyBitmapUtils {
@@ -42,6 +43,8 @@ public class MyBitmapUtils {
      * @return
      */
     public static Bitmap byteToBitmap(byte[] b) {
+
+
         return (b == null || b.length == 0) ? null : BitmapFactory.decodeByteArray(b, 0, b.length);
     }
 

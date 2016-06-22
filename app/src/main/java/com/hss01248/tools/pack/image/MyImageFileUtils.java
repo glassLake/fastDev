@@ -9,16 +9,66 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.hss01248.tools.pack.image.gif.AnimatedGifEncoder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Administrator on 2016/6/21 0021.
  */
 public class MyImageFileUtils {
+
+    /**
+     * 获取图片类型
+     */
+    public String getType(byte[] data) {
+        // Png test:
+        if (data[1] == 'P' && data[2] == 'N' && data[3] == 'G') {
+            return ".png";
+        }
+        // Gif test:
+        if (data[0] == 'G' && data[1] == 'I' && data[2] == 'F') {
+            return ".gif";
+        }
+        // JPG test:
+        if (data[6] == 'J' && data[7] == 'F' && data[8] == 'I'
+                && data[9] == 'F') {
+            return ".jpg";
+        }
+        return ".jpg";
+    }
+
+
+    public void encodeGif(List<Bitmap> bitmaps, File outFile) {
+        try {
+            AnimatedGifEncoder gifEncoder = new AnimatedGifEncoder();
+            gifEncoder.start(new FileOutputStream(outFile));
+            gifEncoder.setDelay(500); // 500ms between frames
+
+            // Grab frames and encode them
+            Iterator<Bitmap> iter = bitmaps.iterator();
+            while (iter.hasNext()) {
+                Bitmap bitmap = iter.next();
+                gifEncoder.addFrame(bitmap);
+            }
+
+            // Make the gif
+            gifEncoder.finish();
+
+            // Add to gallery
+            Uri picUri = Uri.fromFile(outFile);
+            //MyBitmapUtils.addToGallery(picUri);
+
+        } catch (IOException err) {
+
+        }
+    }
 
     /**
      * 保存图片为JPEG
