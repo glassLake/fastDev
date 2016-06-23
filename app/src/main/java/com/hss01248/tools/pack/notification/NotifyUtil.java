@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,13 +20,18 @@ import com.hss01248.tools.base.BaseUtils;
 
 import java.util.ArrayList;
 
-@SuppressLint("NewApi")
+
 public class NotifyUtil {
 
     private static final int FLAG = Notification.FLAG_INSISTENT;
     int requestCode = (int) SystemClock.uptimeMillis();
     private int NOTIFICATION_ID;
     private NotificationManager nm;
+
+    public Notification getNotification() {
+        return notification;
+    }
+
     private Notification notification;
     private NotificationCompat.Builder cBuilder;
     private Notification.Builder nBuilder;
@@ -106,6 +112,7 @@ public class NotifyUtil {
      * @param smallIcon
      * @param ticker
      */
+    @SuppressLint("NewApi")
     private void setBuilder(PendingIntent pendingIntent, int smallIcon, String ticker, boolean sound, boolean vibrate, boolean lights) {
         nBuilder = new Notification.Builder(mContext);
         // 如果当前Activity启动在前台，则不开启新的Activity。
@@ -329,7 +336,7 @@ public class NotifyUtil {
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),
                 bigPic, options);
         picStyle.bigPicture(bitmap);
-        picStyle.bigLargeIcon(bitmap);
+       // picStyle.bigLargeIcon(bitmap);
         cBuilder.setContentText(content);
         cBuilder.setStyle(picStyle);
         sent();
@@ -407,7 +414,7 @@ public class NotifyUtil {
      * @param title
      * @param content
      */
-    public void showServiceForGround(PendingIntent pIntent,int smallIcon,String ticker,String title,String content){
+    public void showServiceForGround(Service service, PendingIntent pIntent, int smallIcon, String ticker, String title, String content){
         cBuilder.setContentIntent(pIntent);// 该通知要启动的Intent
         cBuilder.setSmallIcon(smallIcon);// 设置顶部状态栏的小图标
         cBuilder.setTicker(ticker);// 在顶部状态栏中的提示信息
@@ -422,13 +429,14 @@ public class NotifyUtil {
 		 */
         cBuilder.setAutoCancel(false);
         cBuilder.setOngoing(true);
+
         // 将Ongoing设为true 那么notification将不能滑动删除
         // notifyBuilder.setOngoing(true);
         /*
          * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
 		 * 优先级越高的，通知排的越靠前，优先级低的，不会在手机最顶部的状态栏显示图标
 		 */
-        cBuilder.setPriority(NotificationCompat.FLAG_FOREGROUND_SERVICE);
+        cBuilder.setPriority(Notification.FLAG_FOREGROUND_SERVICE);
         /*
          * Notification.DEFAULT_ALL：铃声、闪光、震动均系统默认。
 		 * Notification.DEFAULT_SOUND：系统默认铃声。
@@ -449,6 +457,8 @@ public class NotifyUtil {
 
         cBuilder.setDefaults(defaults);
         sent();
+
+        service.startForeground(NOTIFICATION_ID,notification);
     }
 
 
@@ -472,7 +482,7 @@ public class NotifyUtil {
          * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
 		 * 优先级越高的，通知排的越靠前，优先级低的，不会在手机最顶部的状态栏显示图标
 		 */
-        cBuilder.setPriority(NotificationCompat.FLAG_FOREGROUND_SERVICE);
+        cBuilder.setPriority(Notification.FLAG_FOREGROUND_SERVICE);
         /*
          * Notification.DEFAULT_ALL：铃声、闪光、震动均系统默认。
 		 * Notification.DEFAULT_SOUND：系统默认铃声。

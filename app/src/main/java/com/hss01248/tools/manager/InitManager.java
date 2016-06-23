@@ -3,6 +3,7 @@ package com.hss01248.tools.manager;
 import com.hss01248.tools.base.BaseApplication;
 import com.hss01248.tools.base.BaseUtils;
 import com.hss01248.tools.pack.image.MyImageUtils;
+import com.hss01248.tools.pack.net.retrofit.RetrofitUtils;
 import com.hss01248.tools.pack.thread.ThreadPoolFactory;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
@@ -47,6 +48,7 @@ public class InitManager {
         StateManager.init();
         initLogger();
         JActivityManager.getInstance().registerActivityCallbacks();
+        RetrofitUtils.init();
 
     }
 

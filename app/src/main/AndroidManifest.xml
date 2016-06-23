@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".demo.ToastDemoActivity"/>
-        <service android:name=".dadabus.DadaBusTicketService"/>
+        <service android:name=".dadabus.DadaBusTicketService" android:persistent="true"/>
     </application>
 
 </manifest>

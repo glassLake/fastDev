@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.hss01248.tools.base.BaseUtils;
 import com.hss01248.tools.dadabus.DadaBusTicketService;
 import com.hss01248.tools.demo.ToastDemoActivity;
+import com.hss01248.tools.pack.net.retrofit.RetrofitUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,6 +52,8 @@ public class MainActivity extends Activity implements ServiceConnection {
         startActivity(intent);
        /* MyToast.showSuccessToast("成功！成功！");
         MyToast.showFailToast("发表失败，请重试");*/
+
+        RetrofitUtils.postTucaoList();
 
     }
 

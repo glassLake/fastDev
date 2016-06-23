@@ -1,8 +1,10 @@
 package com.hss01248.tools.pack.notification;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.widget.RemoteViews;
 
 import com.hss01248.tools.R;
@@ -282,14 +284,14 @@ public class MyNotification {
         return notify1;
     }
 
-    public static NotifyUtil showService(){
+    public static Notification showService(Service service){
         NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_SERVICE);
-        notify1.showServiceForGround(null, R.mipmap.ic_launcher,"搭搭巴士开始监测","监测嗒嗒巴士中","西乡步行街到香港理工");
-        return notify1;
+        notify1.showServiceForGround(service,null, R.mipmap.ic_launcher,"搭搭巴士开始监测","监测嗒嗒巴士中","西乡步行街到香港理工");
+        return notify1.getNotification();
     }
 
 
-    public static NotifyUtil showSound(PendingIntent pIntent,int smallIcon,String ticker,String title,String content){
+    public static NotifyUtil showSound(PendingIntent pIntent, int smallIcon, String ticker, String title, String content){
         NotifyUtil notify1 = new NotifyUtil(BaseUtils.getContext(), ID_SINGLEINE);
         notify1.showSimpleWithSound(pIntent, smallIcon, ticker, title, content,R.raw.sms);
         return notify1;

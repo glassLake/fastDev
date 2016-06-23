@@ -26,7 +26,6 @@ public class DadaBusTicketService extends Service {
     public void onCreate() {
         super.onCreate();
         Logger.e("DadaBusTicketService onCreate");
-        MyNotification.showService();
 
         startTimerTask();
 
@@ -55,6 +54,12 @@ public class DadaBusTicketService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MyNotification.showService(this);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
