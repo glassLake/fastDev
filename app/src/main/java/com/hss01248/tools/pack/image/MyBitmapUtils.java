@@ -1,9 +1,12 @@
 package com.hss01248.tools.pack.image;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -20,12 +23,187 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  *
  * Created by Administrator on 2016/6/21 0021.
  */
 public class MyBitmapUtils {
+
+
+    /**
+     * 两张图片合成
+     * @param background
+     * @param foreground
+     * @param mode
+     * @return
+     */
+    public static Bitmap conformBitmap(Bitmap background, Bitmap foreground,PorterDuff.Mode mode){
+        if( background == null ) {
+            return null;
+        }
+
+        Bitmap bmp = null;
+        //下面这个Bitmap中创建的函数就可以创建一个空的Bitmap
+        bmp = Bitmap.createBitmap(background.getWidth(), background.getHeight(), background.getConfig());
+
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(bmp);
+        //首先绘制第一张图片，很简单，就是和方法中getDstImage一样
+        canvas.drawBitmap(background, 0, 0, paint);
+
+        //在绘制第二张图片的时候，我们需要指定一个Xfermode
+        //这里采用Multiply模式，这个模式是将两张图片的对应的点的像素相乘
+        //，再除以255，然后以新的像素来重新绘制显示合成后的图像
+        paint.setXfermode(new PorterDuffXfermode(mode));
+
+        Rect rectbg = new Rect(0,0,background.getWidth(),background.getHeight());
+        canvas.drawBitmap(foreground, null, rectbg, paint);
+
+        canvas.save(Canvas.ALL_SAVE_FLAG);//保存
+        //store
+        canvas.restore();//存储
+
+
+        return bmp;
+
+
+
+
+
+
+      /*  int bgWidth = background.getWidth();
+        int bgHeight = background.getHeight();
+        //int fgWidth = foreground.getWidth();
+        //int fgHeight = foreground.getHeight();
+        //create the new blank bitmap 创建一个新的和SRC长度宽度一样的位图
+        Bitmap newbmp = Bitmap.createBitmap(bgWidth, bgHeight, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(newbmp);
+        //draw bg into
+        cv.drawBitmap(background, 0, 0, null);//在 0，0坐标开始画入bg
+        //draw fg into
+        cv.drawBitmap(foreground, 0, 0, null);//在 0，0坐标开始画入fg ，可以从任意位置画入
+        //save all clip
+        cv.save(Canvas.ALL_SAVE_FLAG);//保存
+        //store
+        cv.restore();//存储
+        return newbmp;*/
+    }
+
+
+    /**
+     * 从Asserts下获取bitmap
+     * @param context
+     * @param assertName
+     * @return
+     */
+    public static Bitmap getFromAsserts(Context context, String assertName){
+        InputStream inputStream = null;
+        Bitmap bitmap = null;
+        try {
+            inputStream = context.getAssets().open(assertName);
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                return bitmap;
+            }
+        }
+
+
+
+
+    }
+
+
+    /**
+     * 将图片灰度化
+     * @param bitmap
+     * @return
+     */
+    public static final Bitmap grey(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        Bitmap faceIconGreyBitmap = Bitmap
+                .createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(faceIconGreyBitmap);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(
+                colorMatrix);
+        paint.setColorFilter(colorMatrixFilter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return faceIconGreyBitmap;
+    }
+
+
+    /**
+     * 冰冻效果
+     * @param bmp
+     * @return
+     */
+    public static Bitmap ice(Bitmap bmp) {
+
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+
+        int dst[] = new int[width * height];
+        bmp.getPixels(dst, 0, width, 0, 0, width, height);
+
+        int R, G, B, pixel;
+        int pos, pixColor;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pos = y * width + x;
+                pixColor = dst[pos]; // 获取图片当前点的像素值
+
+                R = Color.red(pixColor); // 获取RGB三原色
+                G = Color.green(pixColor);
+                B = Color.blue(pixColor);
+
+                pixel = R - G - B;
+                pixel = pixel * 3 / 2;
+                if (pixel < 0)
+                    pixel = -pixel;
+                if (pixel > 255)
+                    pixel = 255;
+                R = pixel; // 计算后重置R值，以下类同
+
+                pixel = G - B - R;
+                pixel = pixel * 3 / 2;
+                if (pixel < 0)
+                    pixel = -pixel;
+                if (pixel > 255)
+                    pixel = 255;
+                G = pixel;
+
+                pixel = B - R - G;
+                pixel = pixel * 3 / 2;
+                if (pixel < 0)
+                    pixel = -pixel;
+                if (pixel > 255)
+                    pixel = 255;
+                B = pixel;
+                dst[pos] = Color.rgb(R, G, B); // 重置当前点的像素值
+            } // x
+        } // y
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(dst, 0, width, 0, 0, width, height);
+        return bitmap;
+    } // end of Ice
+
+
+
+
     /**
      * convert Bitmap to byte array
      * @param b
