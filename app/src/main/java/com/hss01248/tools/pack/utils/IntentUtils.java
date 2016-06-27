@@ -284,6 +284,14 @@ public class IntentUtils {
         BaseUtils.getContext().startActivity(intent);
     }
 
+    public static void goHome(Context context){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        context.startActivity(intent);
+
+    }
+
 
 
 

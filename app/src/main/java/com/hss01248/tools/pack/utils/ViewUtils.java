@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -122,15 +123,5 @@ public class ViewUtils {
         win.setAttributes(winParams);
     }
 
-    public static  int getPhoneWidth(){
-        WindowManager wm1 = (WindowManager) BaseUtils.getContext().getSystemService(Context.WINDOW_SERVICE);
-        return wm1.getDefaultDisplay().getWidth();
 
-    }
-
-    public static  int getPhoneHeight(){
-        WindowManager wm1 = (WindowManager) BaseUtils.getContext().getSystemService(Context.WINDOW_SERVICE);
-        return wm1.getDefaultDisplay().getHeight();
-
-    }
 }

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.webkit.URLUtil;
 
+import com.commit451.nativestackblur.NativeStackBlur;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
 import com.facebook.cache.common.CacheKey;
@@ -32,15 +34,15 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.hss01248.tools.pack.utils.FileUtils;
 
 import java.io.File;
+import java.util.UUID;
 
 import jp.wasabeef.fresco.processors.BlurPostprocessor;
-import okhttp3.OkHttpClient;
 
 /**
  * Created by Administrator on 2016/6/20 0020.
+ * 注意:各方法需要添加的依赖以及写在方法上方文档注释中
  */
 public class FrescoUtils {
 
@@ -48,9 +50,33 @@ public class FrescoUtils {
 
 
     /**
+     * 需要添加依赖:
+     * compile 'com.commit451:NativeStackBlur:1.0.2'//高斯模糊
+     * @param bkg
+     * @param radius
+     * @param downSampling
+     * @return
+     */
+    private Bitmap fastBlur(Bitmap bkg, int radius,int downSampling) {
+        if (downSampling < 2){
+            downSampling = 2;
+        }
+
+        Bitmap smallBitmap =   Bitmap.createScaledBitmap(bkg,bkg.getWidth()/downSampling,bkg.getHeight()/downSampling,true);
+
+        return   NativeStackBlur.process(smallBitmap, radius);
+    }
+
+
+    /**
+     *
+     * 需要添加依赖:
+     *  compile 'jp.wasabeef:fresco-processors:2.0.0'
+     *              或者自己拷贝那个类出来
+     *
+     *
      * 高斯模糊后显示
      * @param url
-     * @param isOnlyBlurHere 同一个url,是否仅仅在此处模糊:如果想避免其他地方与此url一致的组件也被高斯模糊,可以在url后面加上xx=yy
      * @param draweeView
      * @param width draweeView的宽
      * @param height draweeView的高
@@ -60,15 +86,8 @@ public class FrescoUtils {
      *                 所以此处直接设置到ResizeOptions上,直接让解码生成的bitmap就缩小,而BlurPostprocessor
      *                 内部sampling设置为1,无需再缩
      */
-    public static void loadUrlInBlur(String url,boolean isOnlyBlurHere, SimpleDraweeView draweeView,
+    public static void loadUrlInBlur(String url,SimpleDraweeView draweeView,
                                      int width,int height,Context context,int radius,int sampling){
-        if (isOnlyBlurHere){
-            if (url.contains("?")){
-                url = url+ "&xx=yy";
-            }else {
-                url = url +"?xx=yy";
-            }
-        }
 
         if (sampling<2){
             sampling = 2;
@@ -93,12 +112,12 @@ public class FrescoUtils {
     public static void loadUrl(String url, SimpleDraweeView draweeView,BasePostprocessor processor,int width,int height,
                                BaseControllerListener listener){
 
-       load(Uri.parse(url),draweeView,processor,width,height,listener);
+        load(Uri.parse(url),draweeView,processor,width,height,listener);
 
     }
 
     public static void loadFile(String file, SimpleDraweeView draweeView,BasePostprocessor processor,int width,int height,
-                               BaseControllerListener listener){
+                                BaseControllerListener listener){
 
         load(getFileUri(file),draweeView,processor,width,height,listener);
 
@@ -112,7 +131,7 @@ public class FrescoUtils {
     }
 
     public static void loadRes(int resId, SimpleDraweeView draweeView,BasePostprocessor processor,int width,int height,
-                                BaseControllerListener listener){
+                               BaseControllerListener listener){
 
         load(getResUri(resId),draweeView,processor,width,height,listener);
 
@@ -120,12 +139,13 @@ public class FrescoUtils {
 
 
     public static void load(Uri uri,SimpleDraweeView draweeView,BasePostprocessor processor,int width,int height,
-                                BaseControllerListener listener){
+                            BaseControllerListener listener){
         ImageRequest request =
                 ImageRequestBuilder.newBuilderWithSource(uri)
                         .setPostprocessor(processor)
                         .setResizeOptions(new ResizeOptions(width,height))
-                        //缩放,在解码前修改内存中的图片大小, 配合Downsampling可以处理所有图片,否则只能处理jpg,开启Downsampling:在初始化时设置.setDownsampleEnabled(true)
+                        //缩放,在解码前修改内存中的图片大小, 配合Downsampling可以处理所有图片,否则只能处理jpg,
+                        // 开启Downsampling:在初始化时设置.setDownsampleEnabled(true)
                         .setProgressiveRenderingEnabled(true)//支持图片渐进式加载
                         .setAutoRotateEnabled(true) //如果图片是侧着,可以自动旋转
                         .build();
@@ -152,7 +172,7 @@ public class FrescoUtils {
     }
 
     public static Uri getResUri(int resId){
-       return Uri.parse("res://xxyy/" + resId);
+        return Uri.parse("res://xxyy/" + resId);
     }
 
 
@@ -166,7 +186,6 @@ public class FrescoUtils {
      *
      *roundAsCircle的局限性:
      * 当使用BITMAP_ONLY（默认）模式时的限制：
-
      并非所有的图片分支部分都可以实现圆角，目前只有占位图片和实际图片可以实现圆角，我们正在努力为背景图片实现圆角功能。
      只有BitmapDrawable 和 ColorDrawable类的图片可以实现圆角。我们目前不支持包括NinePatchDrawable和 ShapeDrawable在内的其他类型图片。（无论他们是在XML或是程序中声明的）
      动画不能被圆角。
@@ -179,7 +198,6 @@ public class FrescoUtils {
     public static void setCircle( SimpleDraweeView draweeView,int bgColor){
         RoundingParams roundingParams = RoundingParams.asCircle();//这个方法在某些情况下无法成圆,比如gif
         roundingParams.setOverlayColor(bgColor);//加一层遮罩
-// 或用 fromCornersRadii 以及 asCircle 方法
         draweeView.getHierarchy().setRoundingParams(roundingParams);
     }
 
@@ -207,8 +225,8 @@ public class FrescoUtils {
      * 初始化操作，建议在子线程中进行
      * 添加的依赖：
      *  compile 'com.facebook.fresco:fresco:0.10.0+'
-        compile 'com.facebook.fresco:animated-webp:0.10.0'
-        compile 'com.facebook.fresco:animated-gif:0.10.0'
+     compile 'com.facebook.fresco:animated-webp:0.10.0'
+     compile 'com.facebook.fresco:animated-gif:0.10.0'
      * @param context
      * @param cacheSizeInM  磁盘缓存的大小，以M为单位
      */
@@ -237,37 +255,7 @@ public class FrescoUtils {
     }
 
 
-    /**
-     *
-     * 不要使用这个下载页面的gradle依赖配置，应该使用下面的依赖配置
-     *compile: "com.facebook.fresco:drawee:0.10.0+"
-     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.10.0'
-     * @param context
-     * @param cacheSizeInM
-     * @param okHttpClient
-     */
-    public static void initWithOkhttp(final Context context, int cacheSizeInM, OkHttpClient okHttpClient){
 
-       /* DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
-                .setMaxCacheSize(cacheSizeInM*1024*1024)
-                .setBaseDirectoryName(PHOTO_FRESCO)
-                .setBaseDirectoryPathSupplier(new Supplier<File>() {
-                    @Override
-                    public File get() {
-                        return context.getCacheDir();
-                    }
-                })
-                .build();
-        MyImageCacheStatsTracker imageCacheStatsTracker = new MyImageCacheStatsTracker();
-        ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-                .newBuilder(context, okHttpClient)
-                .setMainDiskCacheConfig(diskCacheConfig)
-                .setImageCacheStatsTracker(imageCacheStatsTracker)
-                .setDownsampleEnabled(true)//Downsampling，它处理图片的速度比常规的裁剪更快，
-                // 并且同时支持PNG，JPG以及WEP格式的图片，非常强大,与ResizeOptions配合使用
-                .build();
-        Fresco.initialize(context, config);*/
-    }
 
 
     /**
@@ -278,14 +266,16 @@ public class FrescoUtils {
     }
 
 
-
+    /**
+     * 清除单张图片的磁盘缓存
+     * @param url
+     */
     public static void clearCacheByUrl(String url){
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         Uri uri = Uri.parse(url);
-      /*  imagePipeline.evictFromMemoryCache(uri);
-        imagePipeline.evictFromDiskCache(uri);*/
-
-        imagePipeline.evictFromCache(uri);//这个包含了从内存移除和从硬盘移除
+        // imagePipeline.evictFromMemoryCache(uri);
+        imagePipeline.evictFromDiskCache(uri);
+        //imagePipeline.evictFromCache(uri);//这个包含了从内存移除和从硬盘移除
     }
 
     /**
@@ -294,10 +284,6 @@ public class FrescoUtils {
      * @param url
      */
     public static File getFileFromDiskCache(String url){
-       /* ImageRequest imageRequest=ImageRequest.fromUri(url);
-        CacheKey cacheKey= DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(imageRequest);
-        BinaryResource resource = ImagePipelineFactory.getInstance().getMainFileCache().getResource(cacheKey);
-        File file=((FileBinaryResource)resource).getFile();*/
         File localFile = null;
         if (!TextUtils.isEmpty(url)) {
             CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(url));
@@ -310,6 +296,73 @@ public class FrescoUtils {
             }
         }
         return localFile;
+    }
+
+    /**
+     * 拷贝缓存文件,指定目标路径和文件名
+     * @param url
+     * @param dir
+     * @param fileName
+     * @return
+     */
+    public static boolean copyCacheFile(String url,File dir,String fileName){
+        File path = new File(dir,fileName);
+        return   copyCacheFile(url,path);
+    }
+
+    /**
+     *拷贝到某一个文件,已指定文件名
+     * @param url 图片的完整url
+     * @param path 目标文件路径
+     * @return
+     */
+    public static boolean copyCacheFile(String url,File path){
+        if (path == null ){
+            return false;
+        }
+        File file = getFileFromDiskCache(url);
+        if (file == null){
+            return false;
+        }
+
+        if (path.isDirectory()){
+            throw  new RuntimeException(path + "is a directory,you should call copyCacheFileToDir(String url,File dir)");
+        }
+        boolean isSuccess =   file.renameTo(path);
+
+        return isSuccess;
+    }
+
+    /**
+     * 拷贝到某一个目录中,自动命名
+     * @param url
+     * @param dir
+     * @return
+     */
+    public static File copyCacheFileToDir(String url,File dir){
+
+        if (dir == null ){
+            return null;
+        }
+        if (!dir.isDirectory()){
+            throw  new RuntimeException(dir + "is not a directory,you should call copyCacheFile(String url,File path)");
+        }
+        if (!dir.exists()){
+            dir.mkdirs();
+        }
+        String fileName = URLUtil.guessFileName(url,"","");//android SDK 提供的方法.
+        // 注意不能直接采用file的getName拿到文件名,因为缓存文件是用cacheKey命名的
+        if (TextUtils.isEmpty(fileName)){
+            fileName = UUID.randomUUID().toString();
+        }
+        File newFile = new File(dir,fileName);
+
+        boolean isSuccess =  copyCacheFile(url,newFile);
+        if (isSuccess){
+            return newFile;
+        }else {
+            return null;
+        }
 
     }
 
@@ -320,7 +373,7 @@ public class FrescoUtils {
      */
     public static boolean isCached(String url) {
 
-      // return Fresco.getImagePipeline().isInDiskCache(Uri.parse(url));
+        // return Fresco.getImagePipeline().isInDiskCache(Uri.parse(url));
 
         ImageRequest imageRequest = ImageRequest.fromUri(url);
         CacheKey cacheKey = DefaultCacheKeyFactory.getInstance()
@@ -334,18 +387,17 @@ public class FrescoUtils {
 
 
     /**
-     * 文件下载到文件夹中：将图片缓存到本地后，将缓存的图片文件copy到另一个文件夹中,其文件名将与中名字一致
+     * 文件下载到文件夹中：将图片缓存到本地后，将缓存的图片文件copy到另一个文件夹中
      *
      * 容易发生如下异常，progress在100处停留时间长
      * dalvikvm: Could not find method android.graphics.Bitmap.getAllocationByteCount,
      * referenced from method com.facebook.imageutils.BitmapUtil.getSizeInBytes
      06-21 16:15:39.547 3043-3244/com.hss01248.tools W/dalvikvm: VFY:
      unable to resolve virtual method 569: Landroid/graphics/Bitmap;.getAllocationByteCount ()I
-
      * @param url
      * @param context
      * @param dir 保存图片的文件夹
-     * @param listener
+     * @param listener 自己定义的回调
      */
     public static void download(final String url, Context context, final File dir, final DownloadListener listener){
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
@@ -360,12 +412,14 @@ public class FrescoUtils {
             protected void onNewResultImpl(DataSource<Void> dataSource) {
 
 
-                File file = getFileFromDiskCache(url);
-                String fileName = FileUtils.getFileName(url);
-                File newFile = new File(dir,fileName);
-                FileUtils.copyFile(file.getAbsolutePath(),newFile.getAbsolutePath());
+                File  file  =   copyCacheFileToDir(url,dir);
                 clearCacheByUrl(url);//清除缓存
-                listener.onSuccess(newFile);
+                if (file == null || !file.exists()){
+                    listener.onFail();
+                }else {
+                    listener.onSuccess(file);
+                }
+
             }
 
             @Override
@@ -405,13 +459,28 @@ public class FrescoUtils {
      * @param context
      * @param width
      * @param height
-     * @param processor
+     * @param processor 后处理器,可为null
      * @param listener
      *
      */
     public static void getBitmapWithProcessor(String url, Context context, int width, int height,
                                               BasePostprocessor processor,final BitmapListener listener){
-        FrescoImageloadHelper.loadBitmap(url, context, width, height, processor,new BaseBitmapDataSubscriber() {
+
+        ResizeOptions resizeOptions = null;
+        if (width !=0 && height != 0 ){
+            resizeOptions = new ResizeOptions(width, height);
+        }
+
+        ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
+                .setProgressiveRenderingEnabled(false) //我们是拿bitmap对象,不是显示,所以这里不需要渐进渲染
+                .setPostprocessor(processor)
+                .setResizeOptions(resizeOptions)
+                .build();
+
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+
+        DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline.fetchDecodedImage(imageRequest, context);
+        dataSource.subscribe(new BaseBitmapDataSubscriber() {
             @Override
             protected void onNewResultImpl(Bitmap bitmap) {
                 listener.onSuccess(bitmap);
@@ -421,7 +490,8 @@ public class FrescoUtils {
             protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
                 listener.onFail();
             }
-        });
+        }, CallerThreadExecutor.getInstance());
+
     }
 
     /**
@@ -493,6 +563,8 @@ public class FrescoUtils {
 
         }
     }
+
+
 
     public interface BitmapListener{
         void onSuccess(Bitmap bitmap);
