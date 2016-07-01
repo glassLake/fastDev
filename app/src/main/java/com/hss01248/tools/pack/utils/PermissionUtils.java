@@ -12,10 +12,19 @@ import com.mylhyl.acp.AcpOptions;
 import java.util.List;
 
 /**
+ *
+ *  需要添加依赖：
+ *  compile 'com.mylhyl:acp:1.0.0'
  * Created by Administrator on 2016/6/15 0015.
  */
 public class PermissionUtils {
 
+
+    /**
+     * compile 'com.mylhyl:acp:1.0.0'
+     * @param listener
+     * @param permission
+     */
     private static void askPermission(final PermissionListener listener,String... permission){
         if (Build.VERSION.SDK_INT >= 23) {
             // Marshmallow+
